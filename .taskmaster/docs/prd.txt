@@ -1,0 +1,91 @@
+# Overview
+This document outlines the requirements for a web application, the "YouTube Data Extractor." The application solves the tedious problem of manually collecting data from YouTube videos. It is designed for researchers, content creators, and marketers who need to analyze, repurpose, or archive video content efficiently. The core value is providing structured, machine-readable data (transcript, description, comments) from any YouTube video with a single click.
+
+# Core Features
+- **URL Input Form:** A clean, single-page UI with a text input field for a YouTube video URL and a primary action button to initiate the data extraction process.
+  - **Why it's important:** This is the sole entry point for the user, so it must be simple, clear, and intuitive.
+  - **How it works:** The user pastes a URL and clicks "Extract Data." The form handles user input and communicates with the backend API.
+
+- **Backend Data Fetching API:** A server-side API endpoint responsible for all data retrieval.
+  - **Why it's important:** Centralizes the core logic, keeps API keys and complex processes off the client, and provides a single source of truth for data extraction.
+  - **How it works:** The API receives a URL, validates it, extracts the video ID, and then uses appropriate libraries and APIs to fetch the transcript, description, and comments from YouTube.
+
+- **JSON Structuring:** The backend will aggregate all fetched data into a single, well-structured JSON object.
+  - **Why it's important:** Provides a consistent, predictable, and easy-to-parse output format for the end-user.
+  - **How it works:** After fetching all data points, the API will construct a JSON object with clear keys like `videoId`, `description`, `transcript`, and `comments`.
+
+- **File Download:** A client-side feature that allows the user to save the generated JSON data to their local machine.
+  - **Why it's important:** This is the final deliverable for the user, completing the core user journey.
+  - **How it works:** Upon receiving a successful response from the API, the frontend will construct a Blob from the JSON data and trigger a browser download, naming the file dynamically (e.g., `{videoId}.json`).
+
+# User Experience
+- **User Personas:**
+  - **Researcher:** Needs to analyze the language used in a video's transcript and the sentiment of its comments.
+  - **Content Creator:** Wants to back up their video data or repurpose a transcript into a blog post.
+- **Key User Flow:**
+  1. User lands on the page.
+  2. User pastes a valid YouTube video URL into the input field.
+  3. User clicks the "Extract Data" button.
+  4. The UI enters a "loading" state to provide feedback.
+  5. Upon success, a file download for the `.json` file is automatically triggered.
+  6. If an error occurs (e.g., video has no transcript), a clear error message is displayed to the user.
+- **UI/UX Considerations:** The design will be minimalist and focused on the primary task. All interactive elements will have disabled states during loading to prevent duplicate submissions.
+
+# Technical Architecture
+- **System Components:**
+  - **Framework:** Next.js (App Router).
+  - **Frontend:** A single client component (`'use client'`) built with React to manage the UI and state (URL input, loading, error).
+  - **Backend:** A Next.js API Route (`/api/extract`) acting as the serverless function to handle data fetching.
+- **Data Model (JSON Output):**
+  ```json
+  {
+    "videoId": "string",
+    "title": "string",
+    "description": "string",
+    "transcript": [
+      { "text": "string", "offset": "number", "duration": "number" }
+    ],
+    "comments": [
+      { "author": "string", "text": "string", "likes": "number" }
+    ],
+    "extractedAt": "ISO_8601_timestamp"
+  }
+  ```
+- **APIs and Integrations:**
+  - **Transcripts:** `youtube-transcript` library.
+  - **Description & Comments:** Official **YouTube Data API v3** via the `googleapis` Node.js library. An API key will be required and stored securely as a server-side environment variable.
+- **Infrastructure Requirements:**
+  - Deployment will be on a serverless platform like Vercel or Netlify to leverage their native support for Next.js.
+
+# Development Roadmap
+- **MVP Requirements:**
+  1. Implement the backend API to fetch and return only the video transcript.
+  2. Build the basic frontend UI to call the API and log the result.
+  3. Integrate the YouTube Data API v3 to fetch the video description and a limited number (e.g., the first 100) of top-level comments.
+  4. Combine all data points into the final JSON structure.
+  5. Implement the file-download functionality on the frontend.
+  6. Add robust error handling for common issues (invalid URL, disabled transcripts/comments).
+  7. Add loading and error states to the UI.
+
+- **Future Enhancements:**
+  - Implement pagination for fetching all comments from a video.
+  - Offer alternative export formats (e.g., CSV, plain text).
+  - Use a background job queue for long-running requests to avoid serverless timeouts.
+  - Add support for extracting data from an entire YouTube channel or playlist.
+
+# Logical Dependency Chain
+1.  **Foundation:** Set up the Next.js project and acquire the YouTube Data API v3 key.
+2.  **Backend Core:** Build the `/api/extract` route. The first goal is to successfully fetch a transcript for a given video ID. This is the highest-risk part and should be proven first.
+3.  **Frontend Shell:** Create the basic UI form. Wire it up to the backend API to prove the end-to-end connection.
+4.  **Backend Expansion:** Enhance the API route to also fetch the description and comments using the official API key.
+5.  **Frontend Polish:** Implement the file download logic and add user-facing loading and error states. This makes the application fully usable.
+
+# Risks and Mitigations
+- **Risk:** Accessing YouTube data is unreliable. Scraping is brittle.
+  - **Mitigation:** We will **exclusively use the official YouTube Data API v3** for comments and description. For transcripts, we will use a well-maintained library that is more resilient than manual scraping.
+- **Risk:** Not all videos have transcripts or comments.
+  - **Mitigation:** Each data-fetching operation on the backend will be wrapped in a `try...catch` block. If a feature (like transcripts) is unavailable, its corresponding key in the JSON will be `null` or an empty array, and the application will not crash.
+- **Risk:** Exceeding the YouTube Data API's daily usage quota.
+  - **Mitigation:** For the MVP, we will explicitly limit the number of comments fetched to a small, fixed number (e.g., 100). The UI will state this limitation clearly.
+- **Risk:** Long-running requests may time out on serverless infrastructure.
+  - **Mitigation:** Limiting the number of comments also mitigates this risk for the MVP. We will acknowledge that processing videos with thousands of comments is out of scope for the initial release.

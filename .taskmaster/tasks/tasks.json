@@ -1,0 +1,149 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 11,
+        "title": "Install Core Dependencies",
+        "description": "Install necessary core dependencies for the project.",
+        "details": "Run 'npm install ytdl-core youtube-transcript-api googleapis' to install the required libraries for handling YouTube data and API interactions.",
+        "testStrategy": "Verify that all dependencies are installed correctly by checking the node_modules directory and ensuring no errors occur during installation.",
+        "priority": "medium",
+        "dependencies": [],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 12,
+        "title": "Utilize YouTube Data API Key",
+        "description": "Ensure the YouTube Data API v3 key is used securely for real data fetching.",
+        "details": "The .env.local file is already set up with the actual YouTube Data API key. Ensure all data fetching functions make real API calls using this key, and confirm no exposure in client-side code.",
+        "testStrategy": "Perform API calls using the key and verify data is fetched correctly without exposing the key in client-side code.",
+        "priority": "medium",
+        "dependencies": [11],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 13,
+        "title": "Implement Backend API for Transcript Fetching",
+        "description": "Develop the backend API endpoint to fetch video transcripts using the youtube-transcript-api library.",
+        "details": "Create a Next.js API route at /api/extract. Use the youtube-transcript-api library to fetch transcripts for a given video ID. Handle errors gracefully and return a structured JSON response.",
+        "testStrategy": "Test with various video URLs to ensure transcripts are fetched correctly and errors are handled.",
+        "priority": "high",
+        "dependencies": [11, 12],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 14,
+        "title": "Build Basic Frontend UI",
+        "description": "Create a simple UI with a URL input form and a button to initiate data extraction using shadcn/ui.",
+        "details": "Develop a single-page application using React and shadcn/ui with a text input for the YouTube URL and a button to trigger the extraction process. Ensure the UI is responsive and intuitive.",
+        "testStrategy": "Perform user testing to ensure the UI is intuitive and responsive. Check that the input form correctly captures and displays user input.",
+        "priority": "medium",
+        "dependencies": [11],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design UI Layout",
+            "description": "Create a responsive and intuitive layout for the single-page application using React and shadcn/ui.",
+            "dependencies": [],
+            "details": "Use React and shadcn/ui to set up the basic structure of the application. Create a main component that includes a text input field for the YouTube URL and a button to initiate the extraction process. Ensure the layout is responsive by using CSS Flexbox or Grid. Consider using a UI library like Material-UI for consistent styling and responsiveness.",
+            "status": "done",
+            "testStrategy": "Test the layout on different screen sizes to ensure responsiveness. Verify that the input field and button are clearly visible and accessible."
+          },
+          {
+            "id": 2,
+            "title": "Implement Input Handling",
+            "description": "Develop functionality to capture and validate user input from the URL text field.",
+            "dependencies": ["14.1"],
+            "details": "Add state management to the main component using React's useState hook to store the URL input. Implement an onChange handler for the input field to update the state. Validate the input to ensure it is a valid YouTube URL format. Display error messages if the input is invalid.",
+            "status": "done",
+            "testStrategy": "Test with various inputs to ensure that only valid YouTube URLs are accepted. Check that error messages are displayed for invalid inputs."
+          },
+          {
+            "id": 3,
+            "title": "Set Up API Call Trigger",
+            "description": "Configure the button to trigger an API call when clicked, using the input URL.",
+            "dependencies": ["14.2"],
+            "details": "Attach an onClick event handler to the button that triggers an API call to the backend endpoint. Use the fetch API or Axios to send the URL to the backend for data extraction. Ensure the button is disabled while the request is in progress to prevent multiple submissions.",
+            "status": "done",
+            "testStrategy": "Simulate button clicks with valid and invalid URLs to ensure the API call is triggered correctly. Verify that the button is disabled during the API call and re-enabled afterward."
+          }
+        ]
+      },
+      {
+        "id": 15,
+        "title": "Integrate YouTube Data API for Description and Comments",
+        "description": "Enhance the backend API to fetch video descriptions and comments using the YouTube Data API v3.",
+        "details": "Expand the /api/extract endpoint to use the googleapis Node.js library to fetch video descriptions and a limited number of comments. Ensure API responses are aggregated into a single JSON object.",
+        "testStrategy": "Test the API with various video URLs to ensure descriptions and comments are fetched and integrated correctly.",
+        "priority": "high",
+        "dependencies": [13],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 16,
+        "title": "Combine Data into Final JSON Structure",
+        "description": "Aggregate all fetched data into a well-structured JSON format.",
+        "details": "After fetching transcripts, descriptions, and comments, combine them into a single JSON object with keys like videoId, description, transcript, and comments. Ensure the JSON is well-structured and includes all necessary data.",
+        "testStrategy": "Validate the JSON structure against the specified data model. Ensure all keys are present and correctly formatted.",
+        "priority": "medium",
+        "dependencies": [15],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 17,
+        "title": "Implement File Download Functionality",
+        "description": "Enable users to download the extracted data as a JSON file.",
+        "details": "On the frontend, use the Blob API to create a downloadable file from the JSON data. Trigger a download with a dynamically generated filename based on the video ID.",
+        "testStrategy": "Test the download functionality across different browsers to ensure compatibility and correct file naming.",
+        "priority": "medium",
+        "dependencies": [16],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 18,
+        "title": "Add Loading and Error States to UI",
+        "description": "Enhance the UI to provide feedback during data extraction and handle errors gracefully.",
+        "details": "Implement loading indicators and disable interactive elements during data fetching. Display error messages for common issues like invalid URLs or missing data.",
+        "testStrategy": "Simulate various scenarios to ensure loading states and error messages are displayed correctly. Verify that the UI remains responsive.",
+        "priority": "medium",
+        "dependencies": [14, 17],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 19,
+        "title": "Implement Robust Error Handling in Backend",
+        "description": "Ensure the backend API handles errors gracefully and provides meaningful feedback.",
+        "details": "Wrap data-fetching operations in try-catch blocks. Return informative error messages and ensure the API does not crash on missing data.",
+        "testStrategy": "Test with edge cases like invalid URLs and videos without transcripts to ensure errors are handled and communicated properly.",
+        "priority": "medium",
+        "dependencies": [15],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 20,
+        "title": "Deploy Application to Vercel",
+        "description": "Deploy the application to a serverless platform for public access.",
+        "details": "Use Vercel's deployment tools to publish the application. Ensure environment variables are correctly configured and the application is accessible online.",
+        "testStrategy": "Access the deployed application to ensure it functions as expected in a production environment.",
+        "priority": "medium",
+        "dependencies": [18, 19],
+        "status": "done",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-07-22T07:52:13.917Z",
+      "updated": "2025-07-22T10:42:05.221Z",
+      "description": "Tasks for master context"
+    }
+  }
+}
