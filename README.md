@@ -64,7 +64,3 @@ Deploy to [Vercel](https://vercel.com/) for serverless, production-ready hosting
 2. Run `vercel` and follow the prompts.
 3. Set your environment variables in the Vercel dashboard.
 4. Visit your deployed app and verify all features work as expected.
-
-## License
-
-MIT
