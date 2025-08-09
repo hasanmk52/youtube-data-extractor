@@ -56,7 +56,7 @@ This project was planned and implemented using **Taskmaster**, a task management
 
 This project is deployed and publicly accessible at:
 
-👉 [https://youtube-data-extractor-r34i4e71h-hasan-kagalwalas-projects.vercel.app/](https://youtube-data-extractor-r34i4e71h-hasan-kagalwalas-projects.vercel.app/)
+👉 [https://youtube-data-extractor-7trzdtg51-hasan-kagalwalas-projects.vercel.app//](https://youtube-data-extractor-r34i4e71h-hasan-kagalwalas-projects.vercel.app/)
 
 Deploy to [Vercel](https://vercel.com/) for serverless, production-ready hosting:
 
